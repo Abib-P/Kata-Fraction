@@ -15,9 +15,9 @@ public class InMemoryFractionRepository implements FractionRepository {
     }
 
     @Override
-    public Fraction add(Fraction fraction) {
+    public int add(Fraction fraction) {
         fractions.add(fraction);
-        return fraction;
+        return fractions.size()-1;
     }
 
     @Override

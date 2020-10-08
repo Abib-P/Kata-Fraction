@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface FractionRepository {
 
-    Fraction add(Fraction fraction);
+    int add(Fraction fraction);
 
     boolean remove(int id);
 

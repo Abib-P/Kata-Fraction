@@ -6,6 +6,7 @@ import pabib.kata.fraction.formatter.PrettyFractionFormatter;
 import pabib.kata.fraction.formatter.SimpleFractionFormatter;
 import pabib.kata.fraction.repository.FractionRepository;
 import pabib.kata.fraction.repository.InMemoryFractionRepository;
+import pabib.kata.fraction.repository.RedisFractionRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,14 +16,14 @@ public class Application {
     public static void main(String[] args) {
 
         FractionFormatter formatter = new SimpleFractionFormatter();
-        FractionRepository fractionsRepository = new InMemoryFractionRepository();
+        FractionRepository fractionsRepository = RedisFractionRepository.createDefault();
         Scanner scan = new Scanner(System.in);
 
 
         while (true) {
             final List<Fraction> fractions = fractionsRepository.findAll();
-            for (int i = 0; i < fractions.size(); i++)
-                System.out.println((i + 1) + ") " + formatter.format(fractions.get(i)));  //TODO Change format to show the n° of the actual fraction (because doesn't work with PrettyFractionFormatter)
+            /*for (int i = 0; i < fractions.size(); i++)
+                System.out.println((i + 1) + ") " + formatter.format(fractions.get(i)));  //TODO Change format to show the n° of the actual fraction (because doesn't work with PrettyFractionFormatter)*/
 
             System.out.println("\n(1)Add a fraction, (2)Delete a fraction, (3)Operations, (4)Change display mode, (q)Exit");
 

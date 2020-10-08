@@ -1,6 +1,9 @@
 package pabib.kata.fraction.core;
 
-public class Fraction {
+import java.io.Serializable;
+import java.util.Objects;
+
+public class Fraction implements Serializable {
 
     private final int numerator;
     private final int denominator;
@@ -44,4 +47,18 @@ public class Fraction {
     public int getNumerator() { return numerator; }
 
     public int getDenominator() { return denominator; }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Fraction fraction = (Fraction) o;
+        return numerator == fraction.numerator &&
+                denominator == fraction.denominator;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(numerator, denominator);
+    }
 }
