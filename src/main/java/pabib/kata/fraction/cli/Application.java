@@ -7,6 +7,8 @@ import pabib.kata.fraction.formatter.SimpleFractionFormatter;
 import pabib.kata.fraction.repository.FractionRepository;
 import pabib.kata.fraction.repository.InMemoryFractionRepository;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 
 public class Application {
@@ -14,33 +16,23 @@ public class Application {
 
         FractionFormatter formatter = new SimpleFractionFormatter();
         FractionRepository fractionsRepository = new InMemoryFractionRepository();
+        Scanner scan = new Scanner(System.in);
 
-        try {
 
-        }catch (Exception e)
-        {
+        while (true) {
+            final List<Fraction> fractions = fractionsRepository.findAll();
+            for (int i = 0; i < fractions.size(); i++)
+                System.out.println((i + 1) + ") " + formatter.format(fractions.get(i)));  //TODO Change format to show the n° of the actual fraction (because doesn't work with PrettyFractionFormatter)
 
-        }
+            System.out.println("\n(1)Add a fraction, (2)Delete a fraction, (3)Operations, (4)Change display mode, (q)Exit");
 
-        while(true)
-        {
-                final var fractions = fractionsRepository.findAll();
-            for(int i = 0; i < fractions.size(); i++)
-                System.out.println( (i+1) + ") " + formatter.format(fractions.get(i)));  //TODO Change format to show the n° of the actual fraction (because doesn't work with PrettyFractionFormatter)
-            }
-
-            System.out.println("\n(1)Add a fraction, (2)Delete a fraction, (3)Operations, (4)Change display mode, (q)Exit ");
-
-            Scanner scan = new Scanner(System.in);
             char input = scan.next().charAt(0);
-            while( (input < '1' || '4' < input ) && input != 'q')
-            {
+            while ((input < '1' || '4' < input) && input != 'q') {
                 System.out.print("invalid character");
                 input = scan.next().charAt(0);
             }
 
-            switch (input)
-            {
+            switch (input) {
                 case '1':
                     addFractionCli(fractionsRepository, scan);
                     break;
@@ -48,25 +40,23 @@ public class Application {
                     deleteFractionCli(fractionsRepository, scan);
                     break;
                 case '3':
-                    fractions.add(chooseOperation(fractions, scan));
+                    fractionsRepository.add(chooseOperation(fractionsRepository, scan));
                     break;
                 case '4':
-                    if(formatter.getClass().getSimpleName().equals("SimpleFractionFormatter")) {
+                    if (formatter instanceof SimpleFractionFormatter) {
                         formatter = new PrettyFractionFormatter();
-                    }
-                    else{
+                    } else {
                         formatter = new SimpleFractionFormatter();
                     }
-
                     break;
                 case 'q':
                     System.exit(0);
             }
         }
+
     }
 
-    public static void addFractionCli(FractionRepository fractionRepository, Scanner scan)
-    {
+    public static void addFractionCli(FractionRepository fractionRepository, Scanner scan) {
         System.out.println("enter the new fraction following this structure \"<numenator> / <denominator>\"");      //TODO loop when input is not valid
         String input = scan.next();                                                                                 //TODO program crash when input not valid!!
 
@@ -76,10 +66,8 @@ public class Application {
         fractionRepository.add(fraction);
     }
 
-    public static void deleteFractionCli(FractionRepository fractionRepository, Scanner scan)
-    {
-        if (fractionRepository.findAll().isEmpty())
-        {
+    public static void deleteFractionCli(FractionRepository fractionRepository, Scanner scan) {
+        if (fractionRepository.isEmpty()) {
             System.out.println("No fraction to be deleted");
             return;
         }
@@ -95,51 +83,37 @@ public class Application {
             input--;
         }
 
-        System.out.println("Fraction (" + (input+1) + ") has been deleted");
+        System.out.println("Fraction (" + (input + 1) + ") has been deleted");
     }
 
-    public static Fraction chooseOperation(FractionRepository fractionRepository, Scanner scan)
-    {
+    public static Fraction chooseOperation(FractionRepository fractionRepository, Scanner scan) {
         System.out.println("\n(1)Addition, (2)Subtraction, (3)Multiply, (4)Divide");                                    //TODO Create a cancel button to return to menu
 
         int input = scan.nextInt();
-        while( input < 1 || 4 < input)
-        {
+        while (input < 1 || 4 < input) {
             System.out.print("invalid number");
             input = scan.nextInt();
         }
 
         System.out.println("Select the first fraction");
-        int firstFraction = scan.nextInt();
-
-        firstFraction--;
-        while( firstFraction < 0 || fractionRepository.findAll().size() <= firstFraction)
-        {
-            System.out.print("invalid number");
-            firstFraction = scan.nextInt();
-            firstFraction--;
-        }
+        Optional<Fraction> firstFraction = fractionRepository.find(scan.nextInt()-1);
 
         System.out.println("Select the second fraction");
-        int secondFraction = scan.nextInt();
+        Optional<Fraction> secondFraction = fractionRepository.find(scan.nextInt()-1);
 
-        secondFraction--;
-        while( secondFraction < 0 || fractions.size() <= secondFraction)
-        {
-            System.out.print("invalid number");
-            secondFraction = scan.nextInt();
-            secondFraction--;
+        if (firstFraction.isPresent() && secondFraction.isPresent()) {
+            switch (input) {
+                case 1:
+                    return firstFraction.get().addition(secondFraction.get());
+                case 2:
+                    return firstFraction.get().subtract(secondFraction.get());
+                case 3:
+                    return firstFraction.get().multiply(secondFraction.get());
+                case 4:
+                    return firstFraction.get().divide(secondFraction.get());
+                default:
+            }
         }
-
-        switch (input) {
-            case 1 :
-                return fractions.get(firstFraction).addition(fractions.get(secondFraction));
-            case 2 :
-                return fractions.get(firstFraction).subtract(fractions.get(secondFraction));
-            case 3 :
-                return fractions.get(firstFraction).multiply(fractions.get(secondFraction));
-            default:
-                return fractions.get(firstFraction).divide(fractions.get(secondFraction));
-        }
+        return null;
     }
 }

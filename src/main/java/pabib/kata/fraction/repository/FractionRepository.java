@@ -14,4 +14,6 @@ public interface FractionRepository {
     List<Fraction> findAll();
 
     Optional<Fraction> find(int id);
+
+    boolean isEmpty();
 }

@@ -41,4 +41,9 @@ public class InMemoryFractionRepository implements FractionRepository {
 
         return Optional.of(fractions.get(id));
     }
+
+    @Override
+    public boolean isEmpty() {
+        return fractions.isEmpty();
+    }
 }
