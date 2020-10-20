@@ -1,11 +1,11 @@
 package pabib.kata.fraction.formatter;
 
-import pabib.kata.fraction.core.Fraction;
+import pabib.kata.fraction.repository.FractionEntity;
 
 public class SimpleFractionFormatter implements FractionFormatter {
 
     @Override
-    public String format(Fraction fraction) {
-        return String.format("%s/%s", fraction.getNumerator(), fraction.getDenominator());
+    public String format(FractionEntity fraction) {
+        return String.format("%d) %s/%s", fraction.getId(), fraction.getNumerator(), fraction.getDenominator());
     }
 }

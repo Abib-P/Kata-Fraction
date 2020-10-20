@@ -1,7 +1,7 @@
 package pabib.kata.fraction.formatter;
 
-import pabib.kata.fraction.core.Fraction;
+import pabib.kata.fraction.repository.FractionEntity;
 
 public interface FractionFormatter {
-    String format(Fraction fraction);
+    String format(FractionEntity fraction);
 }

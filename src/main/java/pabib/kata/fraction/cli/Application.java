@@ -4,9 +4,9 @@ import pabib.kata.fraction.core.Fraction;
 import pabib.kata.fraction.formatter.FractionFormatter;
 import pabib.kata.fraction.formatter.PrettyFractionFormatter;
 import pabib.kata.fraction.formatter.SimpleFractionFormatter;
+import pabib.kata.fraction.repository.FractionEntity;
 import pabib.kata.fraction.repository.FractionRepository;
 import pabib.kata.fraction.repository.InMemoryFractionRepository;
-import pabib.kata.fraction.repository.RedisFractionRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,14 +16,15 @@ public class Application {
     public static void main(String[] args) {
 
         FractionFormatter formatter = new SimpleFractionFormatter();
-        FractionRepository fractionsRepository = RedisFractionRepository.createDefault();
+        FractionRepository fractionsRepository = InMemoryFractionRepository.createDefault();
+        //FractionRepository fractionsRepository = RedisFractionRepository.createDefault();
         Scanner scan = new Scanner(System.in);
 
 
         while (true) {
-            final List<Fraction> fractions = fractionsRepository.findAll();
-            /*for (int i = 0; i < fractions.size(); i++)
-                System.out.println((i + 1) + ") " + formatter.format(fractions.get(i)));  //TODO Change format to show the n° of the actual fraction (because doesn't work with PrettyFractionFormatter)*/
+            final List<FractionEntity> fractions = fractionsRepository.findAll();
+            for (int i = 0; i < fractions.size(); i++)
+                System.out.println(formatter.format(fractions.get(i)));  //TODO Change format to show the n° of the actual fraction (because doesn't work with PrettyFractionFormatter)
 
             System.out.println("\n(1)Add a fraction, (2)Delete a fraction, (3)Operations, (4)Change display mode, (q)Exit");
 
@@ -76,15 +77,13 @@ public class Application {
         System.out.println("Select the fraction you want to delete : ");                                                //TODO Create a cancel button to return to menu
 
         int input = scan.nextInt();
-        input--;
 
         while (!fractionRepository.remove(input)) {
             System.out.print("invalid number");
             input = scan.nextInt();
-            input--;
         }
 
-        System.out.println("Fraction (" + (input + 1) + ") has been deleted");
+        System.out.println("Fraction (" + (input) + ") has been deleted");
     }
 
     public static Fraction chooseOperation(FractionRepository fractionRepository, Scanner scan) {
@@ -97,24 +96,31 @@ public class Application {
         }
 
         System.out.println("Select the first fraction");
-        Optional<Fraction> firstFraction = fractionRepository.find(scan.nextInt()-1);
+        Fraction firstFraction = inputFractionId(fractionRepository, scan);
 
         System.out.println("Select the second fraction");
-        Optional<Fraction> secondFraction = fractionRepository.find(scan.nextInt()-1);
+        Fraction secondFraction = inputFractionId(fractionRepository, scan);
 
-        if (firstFraction.isPresent() && secondFraction.isPresent()) {
             switch (input) {
                 case 1:
-                    return firstFraction.get().addition(secondFraction.get());
+                    return firstFraction.addition(secondFraction);
                 case 2:
-                    return firstFraction.get().subtract(secondFraction.get());
+                    return firstFraction.subtract(secondFraction);
                 case 3:
-                    return firstFraction.get().multiply(secondFraction.get());
+                    return firstFraction.multiply(secondFraction);
                 case 4:
-                    return firstFraction.get().divide(secondFraction.get());
+                    return firstFraction.divide(secondFraction);
                 default:
             }
-        }
         return null;
+    }
+
+    private static Fraction inputFractionId(FractionRepository fractionRepository, Scanner scan) {
+        Optional<Fraction> fraction = Optional.empty();
+
+        while (fraction.isEmpty()) {
+            fraction = fractionRepository.find(scan.nextInt());
+        }
+        return fraction.get();
     }
 }

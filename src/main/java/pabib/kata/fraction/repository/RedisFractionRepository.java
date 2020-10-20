@@ -2,14 +2,17 @@ package pabib.kata.fraction.repository;
 
 import org.redisson.Redisson;
 import org.redisson.api.RBucket;
-import org.redisson.api.RList;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
 import org.redisson.config.SentinelServersConfig;
 import pabib.kata.fraction.core.Fraction;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static java.lang.String.format;
 
 public class RedisFractionRepository implements FractionRepository{
 
@@ -40,30 +43,45 @@ public class RedisFractionRepository implements FractionRepository{
 
     @Override
     public int add(Fraction fraction) {
-        RBucket<Fraction> bucket = redissonClient.getBucket(String.valueOf(fraction.hashCode()));
+        RBucket<Fraction> bucket = redissonClient.getBucket(format("fraction_%d", fraction.hashCode()));
         bucket.set(fraction);
         Fraction fraction1 = bucket.get();
-        System.out.println(fraction1.getNumerator()+" / "+ fraction1.getDenominator());
         return fraction1.hashCode();
     }
 
     @Override
     public boolean remove(int id) {
-        return false;
+        // id+1 because the id is an id-1 (because of Fraction in memory)
+        redissonClient.getKeys().deleteByPattern(format("fraction_%d", id));
+        return true;
     }
 
     @Override
-    public List<Fraction> findAll() {
-        return null;
+    public List<FractionEntity> findAll() {
+        List<String> fractionId = redissonClient.getKeys().getKeysStreamByPattern("fraction_*").collect(Collectors.toList());
+        List<FractionEntity> returnedFractionEntities = new ArrayList<>();
+
+        for (int i = 0; i < fractionId.size(); i++) {
+            final var fraction = redissonClient.<Fraction>getBucket(fractionId.get(i)).get();
+            returnedFractionEntities.add(new FractionEntity(fraction.hashCode(), fraction));
+        }
+        return returnedFractionEntities;
     }
 
     @Override
     public Optional<Fraction> find(int id) {
-        return Optional.empty();
+        RBucket<Fraction> bucket = redissonClient.getBucket(format("fraction_%d", id));
+
+        return Optional.of(bucket)
+                .filter(RBucket::isExists)
+                .map(RBucket::get);
     }
 
     @Override
     public boolean isEmpty() {
-        return false;
+        return redissonClient
+                .getKeys()
+                .getKeysStreamByPattern("fraction_*")
+                .count() == 0;
     }
 }

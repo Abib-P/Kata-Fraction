@@ -10,14 +10,18 @@ public class InMemoryFractionRepository implements FractionRepository {
 
     private final List<Fraction> fractions;
 
-    public InMemoryFractionRepository() {
-        fractions = new ArrayList<>();
+    public InMemoryFractionRepository(List<Fraction> fractions) {
+        this.fractions = fractions;
+    }
+
+    public static InMemoryFractionRepository createDefault() {
+        return new InMemoryFractionRepository(new ArrayList<>());
     }
 
     @Override
     public int add(Fraction fraction) {
         fractions.add(fraction);
-        return fractions.size()-1;
+        return fractions.size() - 1;
     }
 
     @Override
@@ -30,8 +34,12 @@ public class InMemoryFractionRepository implements FractionRepository {
     }
 
     @Override
-    public List<Fraction> findAll() {
-        return List.copyOf(fractions);
+    public List<FractionEntity> findAll() {
+        List<FractionEntity> returnedFractionEntity = new ArrayList<>();
+        for (int i = 0; i < fractions.size(); i++) {
+            returnedFractionEntity.add(new FractionEntity(i, fractions.get(i)));
+        }
+        return returnedFractionEntity;
     }
 
     @Override

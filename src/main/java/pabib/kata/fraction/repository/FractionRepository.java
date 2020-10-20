@@ -11,7 +11,7 @@ public interface FractionRepository {
 
     boolean remove(int id);
 
-    List<Fraction> findAll();
+    List<FractionEntity> findAll();
 
     Optional<Fraction> find(int id);
 
