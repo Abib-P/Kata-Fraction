@@ -14,6 +14,7 @@ import pabib.kata.fraction.repository.InMemoryFractionRepository;
 import pabib.kata.fraction.repository.RedisFractionRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 import static pabib.kata.fraction.utilities.IntegerUtilities.isInt;
 
@@ -46,7 +47,9 @@ public class Application {
                     deleteFractionCli(fractionsRepository, input, output);
                     break;
                 case '3':
-                    fractionsRepository.add(chooseOperation(fractionsRepository, input, output));
+                    Optional<Fraction> optionalFraction = chooseOperation(fractionsRepository, input, output);
+                    if (optionalFraction.isPresent())
+                        fractionsRepository.add(optionalFraction.get());
                     break;
                 case '4':
                     if (formatter instanceof SimpleFractionFormatter) {
@@ -110,10 +113,10 @@ public class Application {
         output.print("Fraction (" + (intInput) + ") has been deleted");
     }
 
-    public static Fraction chooseOperation(FractionRepository fractionRepository, Input input, Output output) {
+    public static Optional<Fraction> chooseOperation(FractionRepository fractionRepository, Input input, Output output) {
         if (fractionRepository.isEmpty()) {
             output.print("No fraction to be chosen");
-            return null;
+            return Optional.empty();
         }
         output.print("\n(1)Addition, (2)Subtraction, (3)Multiply, (4)Divide, (q)Cancel");
 
@@ -124,7 +127,7 @@ public class Application {
                 || s.toCharArray()[0] == 'q');
 
 
-        if (charInput.toCharArray()[0] == 'q') return null;
+        if (charInput.toCharArray()[0] == 'q') return Optional.empty();
 
         output.print("Select the first fraction");
 
@@ -139,13 +142,13 @@ public class Application {
 
         switch (charInput.toCharArray()[0]) {
             case '1':
-                return firstFraction.addition(secondFraction);
+                return Optional.of(firstFraction.addition(secondFraction));
             case '2':
-                return firstFraction.subtract(secondFraction);
+                return Optional.of(firstFraction.subtract(secondFraction));
             case '3':
-                return firstFraction.multiply(secondFraction);
+                return Optional.of(firstFraction.multiply(secondFraction));
             case '4':
-                return firstFraction.divide(secondFraction);
+                return Optional.of(firstFraction.divide(secondFraction));
             default:
         }
         return null;
