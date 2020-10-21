@@ -43,6 +43,8 @@ public class RedisFractionRepository implements FractionRepository{
 
     @Override
     public int add(Fraction fraction) {
+        if (fraction == null)
+            return -1;
         RBucket<Fraction> bucket = redissonClient.getBucket(format("fraction_%d", fraction.hashCode()));
         bucket.set(fraction);
         Fraction fraction1 = bucket.get();
