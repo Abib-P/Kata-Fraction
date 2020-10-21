@@ -27,9 +27,9 @@ public class Application {
 
         final FractionRepository fractionsRepository = selectRepository(output, input);
 
-        boolean shouldRun = true;
+        boolean runApplication = true;
 
-        while (shouldRun) {
+        while (runApplication) {
             printAllFractions(output, formatter, fractionsRepository);
 
             output.print("\n(1)Add a fraction, (2)Delete a fraction, (3)Operations, (4)Change display mode, (q)Exit");
@@ -58,12 +58,12 @@ public class Application {
                     }
                     break;
                 default:
-                    shouldRun = false;
+                    runApplication = false;
                     break;
 
             }
         }
-
+        System.exit(0);
     }
 
     private static void printAllFractions(Output output, FractionFormatter formatter, FractionRepository fractionsRepository) {
