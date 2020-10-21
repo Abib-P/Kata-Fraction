@@ -56,8 +56,9 @@ public class Application {
                     }
                     break;
                 case 'q':
-                    falseBoolean = false;
                     System.exit(0);
+                default:
+                    falseBoolean = false;
             }
         }
 
