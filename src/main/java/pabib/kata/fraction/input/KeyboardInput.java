@@ -1,6 +1,7 @@
 package pabib.kata.fraction.input;
 
 import java.util.Scanner;
+import java.util.function.IntPredicate;
 import java.util.function.Predicate;
 
 import static pabib.kata.fraction.utilities.IntegerUtilities.isInt;
@@ -13,7 +14,7 @@ public class KeyboardInput implements Input {
     }
 
     @Override
-    public int inputInt(Predicate<Integer> predicate) {
+    public int inputInt(IntPredicate predicate) {
         String input;
         do {
             input = scan.nextLine();
