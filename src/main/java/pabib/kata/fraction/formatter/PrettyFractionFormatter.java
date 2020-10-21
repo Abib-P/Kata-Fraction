@@ -11,16 +11,14 @@ public class PrettyFractionFormatter implements FractionFormatter {
         int numeratorLength = String.valueOf(fraction.getNumerator()).length();
         int denominatorLength = String.valueOf(fraction.getDenominator()).length();
 
-        return new StringBuilder()
-                .append(fraction.getId() + ")\n")
-                .append(" ".repeat(max(0, denominatorLength - numeratorLength)))
-                .append(fraction.getNumerator())
-                .append("\n")
-                .append("-".repeat(max(numeratorLength, denominatorLength)))
-                .append("\n")
-                .append(" ".repeat(max(0, numeratorLength - denominatorLength)))
-                .append(fraction.getDenominator())
-                .append("\n")
-                .toString();
+        return fraction.getId() + ")\n" +
+                " ".repeat(max(0, denominatorLength - numeratorLength)) +
+                fraction.getNumerator() +
+                "\n" +
+                "-".repeat(max(numeratorLength, denominatorLength)) +
+                "\n" +
+                " ".repeat(max(0, numeratorLength - denominatorLength)) +
+                fraction.getDenominator() +
+                "\n";
     }
 }

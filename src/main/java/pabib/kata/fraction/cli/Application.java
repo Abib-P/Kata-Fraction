@@ -48,8 +48,7 @@ public class Application {
                     break;
                 case '3':
                     Optional<Fraction> optionalFraction = chooseOperation(fractionsRepository, input, output);
-                    if (optionalFraction.isPresent())
-                        fractionsRepository.add(optionalFraction.get());
+                    optionalFraction.ifPresent(fractionsRepository::add);
                     break;
                 case '4':
                     if (formatter instanceof SimpleFractionFormatter) {
@@ -151,6 +150,6 @@ public class Application {
                 return Optional.of(firstFraction.divide(secondFraction));
             default:
         }
-        return null;
+        return Optional.empty();
     }
 }
