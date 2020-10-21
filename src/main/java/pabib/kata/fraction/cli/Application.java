@@ -10,6 +10,7 @@ import pabib.kata.fraction.output.ConsoleOutput;
 import pabib.kata.fraction.output.Output;
 import pabib.kata.fraction.repository.FractionEntity;
 import pabib.kata.fraction.repository.FractionRepository;
+import pabib.kata.fraction.repository.InMemoryFractionRepository;
 import pabib.kata.fraction.repository.RedisFractionRepository;
 
 import java.util.List;
@@ -18,22 +19,21 @@ import static pabib.kata.fraction.utilities.IntegerUtilities.isInt;
 
 public class Application {
     public static void main(String[] args) {
+        final Output output = new ConsoleOutput();
+        final Input input = new KeyboardInput();
 
         FractionFormatter formatter = new SimpleFractionFormatter();
-        //FractionRepository fractionsRepository = InMemoryFractionRepository.createDefault();
-        FractionRepository fractionsRepository = RedisFractionRepository.createDefault();
-        Output output = new ConsoleOutput();
-        Input input = new KeyboardInput();
-        boolean falseBoolean = true;
 
-        while (falseBoolean) {
-            final List<FractionEntity> fractions = fractionsRepository.findAll();
-            for (int i = 0; i < fractions.size(); i++)
-                output.print(formatter.format(fractions.get(i)));
+        final FractionRepository fractionsRepository = selectRepository(output, input);
+
+        boolean shouldRun = true;
+
+        while (shouldRun) {
+            printAllFractions(output, formatter, fractionsRepository);
 
             output.print("\n(1)Add a fraction, (2)Delete a fraction, (3)Operations, (4)Change display mode, (q)Exit");
 
-            String charInput = input.inputString((s) -> s.length() == 1
+            String charInput = input.inputString(s -> s.length() == 1
                     && (s.toCharArray()[0] >= '1'
                     && s.toCharArray()[0] <= '4')
                     || s.toCharArray()[0] == 'q');
@@ -55,19 +55,36 @@ public class Application {
                         formatter = new SimpleFractionFormatter();
                     }
                     break;
-                case 'q':
-                    System.exit(0);
                 default:
-                    falseBoolean = false;
+                    shouldRun = false;
+                    break;
+
             }
         }
 
     }
 
+    private static void printAllFractions(Output output, FractionFormatter formatter, FractionRepository fractionsRepository) {
+        final List<FractionEntity> fractions = fractionsRepository.findAll();
+        for (FractionEntity fraction : fractions) output.print(formatter.format(fraction));
+    }
+
+    private static FractionRepository selectRepository(Output output, Input input) {
+        output.print("(1)InMemoryFractionRepository, (2)RedisFractionRepository");
+
+        final String charForRepo = input.inputString(s -> s.length() == 1
+                && (s.equals("1")
+                || s.equals("2")));
+
+        return charForRepo.equals("1")
+                ? InMemoryFractionRepository.createDefault()
+                : RedisFractionRepository.createDefault();
+    }
+
     public static void addFractionCli(FractionRepository fractionRepository, Input input, Output output) {
         output.print("enter the new fraction following this structure \"<numenator> / <denominator>\"");
 
-        String stringInput = input.inputString((s) ->
+        String stringInput = input.inputString(s ->
                 s.contains("/")
                         && s.split("/")[0].length() > 0
                         && isInt(s.split("/")[0])
@@ -88,7 +105,7 @@ public class Application {
 
         output.print("Select the fraction you want to delete : ");
 
-        int intInput = input.inputInt((i) -> fractionRepository.remove(i));
+        int intInput = input.inputInt(fractionRepository::remove);
 
         output.print("Fraction (" + (intInput) + ") has been deleted");
     }
@@ -101,7 +118,7 @@ public class Application {
         output.print("\n(1)Addition, (2)Subtraction, (3)Multiply, (4)Divide, (q)Cancel");
 
 
-        String charInput = input.inputString((s) -> s.length() == 1
+        String charInput = input.inputString(s -> s.length() == 1
                 && (s.toCharArray()[0] >= '1'
                 && s.toCharArray()[0] <= '4')
                 || s.toCharArray()[0] == 'q');
@@ -111,10 +128,10 @@ public class Application {
 
         output.print("Select the first fraction");
 
-        int idFirstFraction = input.inputInt((i) -> !fractionRepository.find(i).isEmpty());
+        int idFirstFraction = input.inputInt(i -> fractionRepository.find(i).isPresent());
 
         output.print("Select the second fraction");
-        int idSecondFraction = input.inputInt((i) -> !fractionRepository.find(i).isEmpty());
+        int idSecondFraction = input.inputInt(i -> fractionRepository.find(i).isPresent());
 
         Fraction firstFraction = fractionRepository.find(idFirstFraction).get();
 

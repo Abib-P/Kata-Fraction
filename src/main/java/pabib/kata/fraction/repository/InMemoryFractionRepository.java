@@ -21,7 +21,7 @@ public class InMemoryFractionRepository implements FractionRepository {
     @Override
     public int add(Fraction fraction) {
         if (fraction == null)
-            return -1;
+            return -1; //TODO use optional instead of NULL
         fractions.add(fraction);
         return fractions.size() - 1;
     }
