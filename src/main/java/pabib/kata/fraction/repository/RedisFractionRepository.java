@@ -61,8 +61,8 @@ public class RedisFractionRepository implements FractionRepository{
         List<String> fractionId = redissonClient.getKeys().getKeysStreamByPattern("fraction_*").collect(Collectors.toList());
         List<FractionEntity> returnedFractionEntities = new ArrayList<>();
 
-        for (int i = 0; i < fractionId.size(); i++) {
-            final var fraction = redissonClient.<Fraction>getBucket(fractionId.get(i)).get();
+        for (String s : fractionId) {
+            final var fraction = redissonClient.<Fraction>getBucket(s).get();
             returnedFractionEntities.add(new FractionEntity(fraction.hashCode(), fraction));
         }
         return returnedFractionEntities;
