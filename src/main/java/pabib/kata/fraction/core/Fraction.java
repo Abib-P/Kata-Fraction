@@ -17,31 +17,31 @@ public class Fraction implements Serializable {
     }
 
     public Fraction addition(final Fraction fraction) {
-        final int numerator = this.numerator * fraction.denominator + fraction.numerator * this.denominator;
-        final int denominator = this.denominator * fraction.denominator;
+        final int newNumerator = this.numerator * fraction.denominator + fraction.numerator * this.denominator;
+        final int newDenominator = this.denominator * fraction.denominator;
 
-        return new Fraction(numerator, denominator);
+        return new Fraction(newNumerator, newDenominator);
     }
 
     public Fraction subtract(final Fraction fraction) {
-        final int numerator = this.numerator * fraction.denominator - fraction.numerator * this.denominator;
-        final int denominator = this.denominator * fraction.denominator;
+        final int newNumerator = this.numerator * fraction.denominator - fraction.numerator * this.denominator;
+        final int newDenominator = this.denominator * fraction.denominator;
 
-        return new Fraction(numerator, denominator);
+        return new Fraction(newNumerator, newDenominator);
     }
 
     public Fraction multiply(final Fraction fraction) {
-        final int numerator = this.numerator * fraction.numerator;
-        final int denominator = this.denominator * fraction.denominator;
+        final int newNumerator = this.numerator * fraction.numerator;
+        final int newDenominator = this.denominator * fraction.denominator;
 
-        return new Fraction(numerator, denominator);
+        return new Fraction(newNumerator, newDenominator);
     }
 
     public Fraction divide(final Fraction fraction) {
-        final int numerator = this.numerator * fraction.denominator;
-        final int denominator = this.denominator * fraction.numerator;
+        final int newNumerator = this.numerator * fraction.denominator;
+        final int newDenominator = this.denominator * fraction.numerator;
 
-        return new Fraction(numerator, denominator);
+        return new Fraction(newNumerator, newDenominator);
     }
 
     public int getNumerator() { return numerator; }
