@@ -1,2 +1,2 @@
 # Kata-Fraction
-Kata Fraction Java
+Kata Fraction Java with Hexagonal architecture (https://alistair.cockburn.us/hexagonal-architecture/)
